@@ -1,0 +1,12 @@
+{
+  "name": "EmerNav",
+  "displayName": "EmerNav",
+  "expo": {
+    "name": "EmerNav",
+    "slug": "EmerNav",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
