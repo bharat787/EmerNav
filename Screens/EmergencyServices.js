@@ -1,12 +1,29 @@
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, TextInput, Alert } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
+import MapView , { PROVIDER_GOOGLE }from 'react-native-maps';
+import Geolocation from '@react-native-community/geolocation'
 
 const EmergencyService = props => {
 
     const [fromLoc, setFromLoc] = useState('current Loc')
     const [destinationLoc, setDestionLoc] = useState('')
     const [dict, setDict] = useState([])
+    const [currentLong, setCurrentLong] = useState(77.538471)//77.538471
+    const [currentLat, setCurrentLat] = useState(28.468596)
+
+    Geolocation.getCurrentPosition((position) => {
+        const currentLongitude = 
+            JSON.stringify(position.coords.longitude)
+            console.log(currentLongitude)
+        const currentLangitude =
+            JSON.stringify(position.coords.latitude)
+
+        setCurrentLat(parseFloat(currentLongitude))
+        setCurrentLong(parseFloat(currentLangitude))
+    },(error) => alert(error.message),
+    { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 })
+
     var data = [
         {Name: 'HospitalA'},
         {Name: 'HospitalB'},
@@ -22,6 +39,11 @@ const EmergencyService = props => {
                 </Text>
             </View>
         </View>
+    }
+
+    const ambulancebtn = () => {
+        Alert.alert("An Ambulance has been dispatched to your current location. \
+        We will ensure that traffic is cleared for the fastest approach time.")
     }
 
     return(
@@ -42,15 +64,37 @@ const EmergencyService = props => {
                     placeholderTextColor="#003f5c"
                     onChangeText={text => setDestinationLoc(text)}/>
             </View>
-
-            <FlatList />
+            <View style = {styles.mapview}>
+            <MapView
+                provider={PROVIDER_GOOGLE}// remove if not using Google Maps
+                style={styles.map}
+                region={{
+                latitude: currentLat,
+                longitude: currentLong,
+                latitudeDelta: 0.015,
+                longitudeDelta: 0.0121,
+                }}
+            >
+                <MapView.Marker
+                    coordinate={{
+                        "latitude": currentLat,
+                        "longitude": currentLong,}}
+                        title={"currentLocation"}
+                        draggable
+                    />
+            </MapView>
+            </View>
 
             <View style={styles.parallel}>
-                <TouchableOpacity style={styles.ambButton}>
+                <TouchableOpacity 
+                style={styles.ambButton}
+                onPress={() => ambulancebtn()}>
                     <Text style={styles.font}>CALL AMBULANCE</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.selfButton}>
+                <TouchableOpacity 
+                    style={styles.selfButton}
+                    onPress={() => props.nav.navigate('Drive')}>
                     <Text style={styles.font}>SELF DRIVE</Text>
                 </TouchableOpacity>
             </View>
@@ -74,9 +118,10 @@ const styles = StyleSheet.create({
         borderColor: Colors.Blue1,
         borderRadius:25,
         height:50,
-        marginBottom:5,
+        //marginBottom:5,
         justifyContent:"center",
-        padding:20
+        padding:20,
+        margin: 10
     },
 
     parallel: {
@@ -87,7 +132,7 @@ const styles = StyleSheet.create({
     ambButton: {
         borderRadius: 20,
         backgroundColor: 'red',
-        height: 30,
+        height: 50,
         width: '45%',
         margin: 10,
         padding: 20,
@@ -100,7 +145,7 @@ const styles = StyleSheet.create({
     selfButton: {
         borderRadius: 20,
         backgroundColor: 'green',
-        height: 30,
+        height: 50,
         width: '45%',
         margin: 10,
         padding: 20,
@@ -141,6 +186,17 @@ const styles = StyleSheet.create({
     
     listarea: {
         color: 'grey'
+    },
+    map: {
+        ...StyleSheet.absoluteFillObject,
+    },
+
+    mapview:{
+        //...StyleSheet.absoluteFillObject,
+   height: 400,
+   width: 400,
+   justifyContent: 'flex-end',
+   alignItems: 'center',
     }
 })
 

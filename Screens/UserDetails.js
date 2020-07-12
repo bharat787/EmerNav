@@ -3,13 +3,16 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Colors from '../Constants/colors'
 import Input from '../components/Input'
+import firebase from '../environment/config'
 
 const PersonalDetails = props => {
 
     const [name, setName] = useState('')
     
     const [details, setDetails] = useState({})
-    
+    firebase.database().ref(`users/${firebase.auth().currentUser.uid}`).once('value', function (snapshot) {
+        setDetails(snapshot.val())
+    });    
 
     return (
         
@@ -29,8 +32,12 @@ const PersonalDetails = props => {
                 placeholder={details.email}
                 placeholderTextColor={Colors.YellowAccent}/>
 
+                <Input style={styles.TextIn3} 
+                placeholder={details.address}
+                placeholderTextColor={Colors.YellowAccent}/>
+
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.font}>Save</Text>
+                    <Text style={styles.font}>Change</Text>
                 </TouchableOpacity>
                 </View>
             
@@ -98,7 +105,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderColor: Colors.Blue2,
         borderWidth: 2,
-        borderRadius: 50,
+        borderRadius: 20,
         height: "7%",
         width: "40%",
         alignItems: 'center',
