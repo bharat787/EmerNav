@@ -3,11 +3,12 @@ import { StyleSheet, Text, View, TouchableOpacity, FlatList, TextInput, Alert } 
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import MapView , { PROVIDER_GOOGLE }from 'react-native-maps';
 import Geolocation from '@react-native-community/geolocation'
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 const EmergencyService = props => {
 
     const [fromLoc, setFromLoc] = useState('current Loc')
-    const [destinationLoc, setDestionLoc] = useState('')
+    const [destinationLoc, setDestinationLoc] = useState('')
     const [dict, setDict] = useState([])
     const [currentLong, setCurrentLong] = useState(77.538471)//77.538471
     const [currentLat, setCurrentLat] = useState(28.468596)
@@ -16,13 +17,13 @@ const EmergencyService = props => {
         const currentLongitude = 
             JSON.stringify(position.coords.longitude)
             console.log(currentLongitude)
-        const currentLangitude =
+        const currentLatitude =
             JSON.stringify(position.coords.latitude)
 
-        setCurrentLat(parseFloat(currentLongitude))
-        setCurrentLong(parseFloat(currentLangitude))
+        setCurrentLat(parseFloat(currentLatitude))
+        setCurrentLong(parseFloat(currentLongitude))
     },(error) => alert(error.message),
-    { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 })
+    { enableHighAccuracy: true, timeout: 20000 })
 
     var data = [
         {Name: 'HospitalA'},
@@ -42,8 +43,8 @@ const EmergencyService = props => {
     }
 
     const ambulancebtn = () => {
-        Alert.alert("An Ambulance has been dispatched to your current location. \
-        We will ensure that traffic is cleared for the fastest approach time.")
+        Alert.alert("An Ambulance has been dispatched to your current location.",
+        "We will ensure that traffic is cleared for the fastest approach time.")
     }
 
     return(
@@ -51,18 +52,18 @@ const EmergencyService = props => {
             <View style={styles.inputView}>
                 <TextInput
                     style={styles.inputText}
-                    placeholder="From(Current Location)..."
+                    placeholder="From(Current Location)"
                     placeholderTextColor='#003f5c'
                     onChangeText={text => setFromLoc(text)}/>
             </View>
 
             <View style={styles.inputView} >
                 <TextInput  
-                    secureTextEntry
                     style={styles.inputText}
                     placeholder="Destination..." 
                     placeholderTextColor="#003f5c"
                     onChangeText={text => setDestinationLoc(text)}/>
+                
             </View>
             <View style = {styles.mapview}>
             <MapView
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
 
     mapview:{
         //...StyleSheet.absoluteFillObject,
-   height: 400,
+   height: 560,
    width: 400,
    justifyContent: 'flex-end',
    alignItems: 'center',
